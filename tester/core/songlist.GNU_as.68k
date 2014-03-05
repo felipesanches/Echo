@@ -1,0 +1,73 @@
+|****************************************************************************
+| SongList
+| List of songs that appear on the menu
+|****************************************************************************
+
+SongList:
+    dc.l    BGM_Midnas, Str_Midnas_1, Str_Midnas_2, Str_Midnas_3
+    dc.l    BGM_Nelpel, Str_Nelpel_1, Str_Nelpel_2, Str_Nelpel_3
+    dc.l    BGM_Megajysays, Str_Megajysays_1, Str_Megajysays_2, Str_Megajysays_3
+    dc.l    BGM_Doomsday, Str_Doomsday_1, Str_Doomsday_2, Str_Doomsday_3
+    dc.l    BGM_PianoTest, Str_PianoTest_1, Str_PianoTest_2, Str_Null
+    dc.l    BGM_SquSawTest2, Str_SquSawTest_1a, Str_SquSawTest_2, Str_SquSawTest_3a
+    dc.l    BGM_SquSawTest1, Str_SquSawTest_1b, Str_SquSawTest_2, Str_SquSawTest_3b
+    dc.l    BGM_PSGTest, Str_PSGTest_1, Str_PSGTest_2, Str_Null
+    dc.l    BGM_DrumTest, Str_DrumTest_1, Str_DrumTest_2, Str_Null
+    dc.l    BGM_FluteTest, Str_FluteTest_1, Str_FluteTest_2, Str_FluteTest_3
+
+                       | 012345678901234567890123456
+Str_Null:          .string ""
+Str_Untitled:      .string "[untitled]"
+
+                       | 012345678901234567890123456
+Str_Midnas_1:      .string "Midna's Desperate Hour"
+Str_Midnas_2:      .string "Composed by Koji Kondo"
+Str_Midnas_3:      .string "Transcribed by Aivi Tran"
+
+                       | 012345678901234567890123456
+Str_Nelpel_1:      .string "Nelpel Four (crappy ver.)"
+Str_Nelpel_2:      .string "XM > MIDI > ESF conversion"
+Str_Nelpel_3:      .string "and really bad instruments"
+
+                       | 012345678901234567890123456
+Str_Megajysays_1:  .string "Megajysays"
+Str_Megajysays_2:  .string "That second A should have"
+Str_Megajysays_3:  .string "two dots on top of it."
+
+                       | 012345678901234567890123456
+Str_Doomsday_1:    .string "The Doomsday Project"
+Str_Doomsday_2:    .string "Another module conversion."
+Str_Doomsday_3:    .string "Like I give a crap :P"
+
+                       | 012345678901234567890123456
+Str_PianoTest_1:   .string "test-piano.mid"
+Str_PianoTest_2:   .string "Some generic piano..."
+
+                       | 012345678901234567890123456
+Str_SquSawTest_1a: .string "test-squsaw-2ch.mid"
+Str_SquSawTest_1b: .string "test-squsaw-1ch.mid"
+Str_SquSawTest_2:  .string "FM square and sawtooth"
+Str_SquSawTest_3a: .string "2 channels version"
+Str_SquSawTest_3b: .string "1 channel version"
+
+                       | 012345678901234567890123456
+Str_PSGTest_1:     .string "test-psg.mid"
+Str_PSGTest_2:     .string "Two square PSG channels."
+
+                       | 012345678901234567890123456
+Str_DrumTest_1:    .string "test-drums.mid"
+Str_DrumTest_2:    .string "Snare and kicks!"
+
+                       | 012345678901234567890123456
+Str_FluteTest_1:   .string "test-flute.mid"
+Str_FluteTest_2:   .string "Flute and a seashore."
+Str_FluteTest_3:   .string "Feels so calm..."
+
+    .even
+
+|****************************************************************************
+| NumSongs
+| Number of songs in song list
+|****************************************************************************
+
+		.equ NumSongs, 10

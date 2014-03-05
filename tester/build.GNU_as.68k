@@ -1,0 +1,21 @@
+    .include "core/header.GNU_as.68k"
+    .include "core/entry.GNU_as.68k"
+    .include "core/menu.GNU_as.68k"
+    .include "core/songlist.GNU_as.68k"
+
+    .include "video/text.GNU_as.68k"
+    .include "video/bg.GNU_as.68k"
+    .include "video/vsync.GNU_as.68k"
+
+    .include "input/joypad.GNU_as.68k"
+
+    .include "sound/echo.GNU_as.68k"
+    .include "sound/esf.GNU_as.68k"
+    .include "sound/list.GNU_as.68k"
+    .include "sound/bgms.GNU_as.68k"
+    .include "sound/sfxs.GNU_as.68k"
+
+|    cnop    0, 0x8000 | why do we need this ? How can we port it to GNU Assembler syntax ?
+
+    .include "core/vars.GNU_as.68k"
+

@@ -1,0 +1,178 @@
+|****************************************************************************
+| EntryPoint
+| Where the program starts
+|****************************************************************************
+
+EntryPoint:
+    move.w  #0x2700, %sr              | Disable interrupts
+
+    move.b  (0xA10001), %d0           | Disable TMSS if needed
+    and.b   #0x0F, %d0
+    beq.s   NoTMSS
+    move.l  #0x53454741, 0xA14000
+NoTMSS:
+
+    bsr     InitJoypad              | Init joypad
+
+    lea     (0xC00004), %a0           | Init VDP
+    move.w  #0x8004, (%a0)              | No IRQ4, no HV latch
+    move.w  #0x8114, (%a0)              | Disable display
+    move.w  #0x8230, (%a0)              | Scroll A: 0xC000
+    move.w  #0x8407, (%a0)              | Scroll B: 0xE000
+    move.w  #0x8578, (%a0)              | Sprites: 0xF000
+    move.w  #0x8700, (%a0)              | Background: pal 0, color 0
+    move.w  #0x8B00, (%a0)              | No IRQ2, full scroll
+    move.w  #0x8C81, (%a0)              | H40, no S/H, no interlace
+    move.w  #0x8D3E, (%a0)              | HScroll: 0xF800
+    move.w  #0x8F02, (%a0)              | Autoincrement: 2 bytes
+    move.w  #0x9001, (%a0)              | Scroll size: 64x32
+    move.w  #0x9100, (%a0)              | Hide window plane
+    move.w  #0x9200, (%a0)              |  "     "      "
+
+    moveq   #0, %d0                  | Clear VRAM
+    move.l  #0x40000000, (%a0)
+    lea     (0xC00000), %a1
+    move.w  #0x800-1, %d1
+ClearVRAM:
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    dbf     %d1, ClearVRAM
+
+    move.l  #0xC0000000, (%a0)        | Clear CRAM
+    moveq   #8-1, %d1
+ClearCRAM:
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    move.l  %d0, (%a1)
+    dbf     %d1, ClearCRAM
+
+    move.l  #0x40000010, (%a0)        | Clear VSRAM
+    move.l  %d0, (%a1)
+
+    lea     (PointerList), %a0       | Initialize Echo
+    bsr     Echo_Init
+
+    bsr     LoadFont                | Load font
+
+    lea     (0xC00004), %a0           | Load palette
+    lea     (0xC00000), %a1
+    move.l  #0xC0020000, (%a0)
+    move.l  #0x066600CE, (%a1)
+    move.l  #0x000E000E, (%a1)
+    move.l  #0xC0220000, (%a0)
+    move.l  #0x06660EEE, (%a1)
+    move.l  #0x000E000E, (%a1)
+    move.l  #0xC0420000, (%a0)
+    move.l  #0x04440E88, (%a1)
+    move.l  #0xC0620000, (%a0)
+    move.l  #0x04440888, (%a1)
+
+    move.l  #0xC00A0000, (%a0)
+    move.l  #0x02220444, (%a1)
+    move.l  #0x02240024, (%a1)
+    move.l  #0x02440020, (%a1)
+    move.w  #0x0040, (%a1)
+
+    move.l  #0x58000000, (%a0)        | Load graphics
+    lea     (Gfx_Arrows), %a2
+    moveq   #12-1, %d7
+LoadGfx:
+    move.l  (%a2)+, (%a1)
+    move.l  (%a2)+, (%a1)
+    move.l  (%a2)+, (%a1)
+    move.l  (%a2)+, (%a1)
+    move.l  (%a2)+, (%a1)
+    move.l  (%a2)+, (%a1)
+    move.l  (%a2)+, (%a1)
+    move.l  (%a2)+, (%a1)
+    dbf     %d7, LoadGfx
+
+    move.l  #0x44880003, (%a0)        | Write left arrow
+    move.l  #0x00C000C1, (%a1)
+    move.l  #0x45080003, (%a0)
+    move.l  #0x00C200C3, (%a1)
+
+    move.l  #0x44C40003, (%a0)        | Write right arrow
+    move.l  #0x28C128C0, (%a1)
+    move.l  #0x45440003, (%a0)
+    move.l  #0x28C328C2, (%a1)
+
+    moveq   #2, %d0                  | Write title
+    moveq   #1, %d1
+    move.w  #0x8000, %d2
+    lea     (Str_Title1), %a0
+    bsr     WriteString
+    addq.w  #2, %d1
+    move.w  #0xE000, %d2
+    lea     (Str_Title2), %a0
+    bsr     WriteString
+
+    moveq   #20-(24/2), %d0          | Write instructions
+    moveq   #23, %d1
+    lea     (Str_Instr1), %a0
+    bsr     WriteString
+    moveq   #20-(18/2), %d0
+    addq.w  #2, %d1
+    lea     (Str_Instr2), %a0
+    bsr     WriteString
+
+    bsr     DrawBG                  | Draw background
+
+    move.w  #0x8154, (0xC00004)       | Enable di%splay
+    bra     MainMenu                | Go into the main menu
+
+|****************************************************************************
+
+Gfx_Arrows:
+    dc.l    0x00000000, 0x00000000, 0x00000000, 0x00000000
+    dc.l    0x00000034, 0x00004343, 0x00343434, 0x43434343
+    dc.l    0x00000034, 0x00004343, 0x00343434, 0x43434343
+    dc.l    0x34343434, 0x43434343, 0x34343434, 0x43434343
+    dc.l    0x34343434, 0x00434343, 0x00003434, 0x00000043
+    dc.l    0x00000000, 0x00000000, 0x00000000, 0x00000000
+    dc.l    0x34343434, 0x43434343, 0x34343434, 0x43434343
+    dc.l    0x34343434, 0x00434343, 0x00003434, 0x00000043
+
+Gfx_BG:
+    dc.l    0x55555555, 0x55555555, 0x55555555, 0x55555555
+    dc.l    0x55555555, 0x55555555, 0x55555555, 0x55555555
+    dc.l    0x00000000, 0x00000000, 0x00000000, 0x00000000
+    dc.l    0x00000000, 0x00000000, 0x00000000, 0x00000000
+    dc.l    0x66666666, 0x66666666, 0x66666666, 0x66666666
+    dc.l    0x66666666, 0x66666666, 0x66666666, 0x66666666
+
+    dc.l    0x78787878, 0x87878787, 0x78787878, 0x87878787
+    dc.l    0x78787878, 0x87878787, 0x78787878, 0x87878787
+    dc.l    0x79797979, 0x97979797, 0x79797979, 0x97979797
+    dc.l    0x79797979, 0x97979797, 0x79797979, 0x97979797
+
+    dc.l    0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA
+    dc.l    0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA
+    dc.l    0xBABABABA, 0xABABABAB, 0xBABABABA, 0xABABABAB
+    dc.l    0xBABABABA, 0xABABABAB, 0xBABABABA, 0xABABABAB
+
+    dc.l    0x56565656, 0x65656565, 0x56565656, 0x65656565
+    dc.l    0x56565656, 0x65656565, 0x56565656, 0x65656565
+
+                        | 123456789012345678901234567890123456
+
+Str_Title1:
+    .string "Echo sound engine"
+
+Str_Title2:
+    .string "Version 1.2 by Sik"
+
+Str_Instr1:
+    .string "Use D-pad to select song"
+
+Str_Instr2:
+    .string "A/C: play, B: stop"
+
+    .even

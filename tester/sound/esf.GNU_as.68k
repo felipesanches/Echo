@@ -1,0 +1,161 @@
+|****************************************************************************
+| Channel ID constants
+|****************************************************************************
+
+.equ ESF_FM1, 0x00         | FM channel #1
+.equ ESF_FM2, 0x01         | FM channel #2
+.equ ESF_FM3, 0x02         | FM channel #3
+.equ ESF_FM4, 0x04         | FM channel #4
+.equ ESF_FM5, 0x05         | FM channel #5
+.equ ESF_FM6, 0x06         | FM channel #6
+.equ ESF_PSG1, 0x08        | PSG square channel #1
+.equ ESF_PSG2, 0x09        | PSG square channel #2
+.equ ESF_PSG3, 0x0A        | PSG square channel #3
+.equ ESF_PSG4, 0x0B        | PSG noise channel
+.equ ESF_PCM, 0x0C         | PCM channel
+
+|****************************************************************************
+| ESF_NoteOn
+| Start playing a note.
+|----------------------------------------------------------------------------
+| For FM channels:
+|   ESF_NoteOn channel, octave, semitone
+| For square PSG channels:
+|   ESF_NoteOn channel, octave, semitone
+| For noise PSG channel:
+|   ESF_NoteOn channel, type
+| For PCM channel:
+|   ESF_NoteOn channel, instrument
+|----------------------------------------------------------------------------
+| param channel ...... channel to play on
+| param octave ....... octave (0 to 7 for FM, 0 to 5 for PSG)
+| param semitone ..... semitone (0 to 11)
+| param type ......... noise type (0x00 to 0x07)
+| param instrument ... drum instrument ID (0x00 to 0xFF)
+|****************************************************************************
+
+.macro ESF_NoteOn
+    dc.b    0x00+(\1)
+    if      (\1)<ESF_PSG1
+    dc.b    (\2)*32+(\3)*2+1
+    elseif  (\1)<ESF_PSG4
+    dc.b    (\2)*24+(\3)*2
+    else
+    dc.b    \2
+    endc
+.endm
+
+|****************************************************************************
+| ESF_NoteOff
+| Stop playing a note.
+|----------------------------------------------------------------------------
+| Format:
+|   ESF_NoteOff channel
+|----------------------------------------------------------------------------
+| param channel ...... channel to stop
+|****************************************************************************
+
+.macro ESF_NoteOff
+    dc.b    0x10+(\1)
+.endm
+
+|****************************************************************************
+| ESF_SetVol
+| Set the volume of a channel.
+|----------------------------------------------------------------------------
+| Format:
+|   ESF_SetVol channel, volume
+|----------------------------------------------------------------------------
+| param channel ... channel to modify
+| param volume .... new volume (0x00 to 0x7F for FM, 0x00 to 0x0F for PSG)
+|****************************************************************************
+
+.macro ESF_SetVol
+    dc.b    0x20+(\1)
+    dc.b    (\2)
+.endm
+
+|****************************************************************************
+| ESF_SetFreq
+| Sets the frequency of a channel (allows note slides).
+|----------------------------------------------------------------------------
+| For FM channels:
+|   ESF_SetFreq channel, octave, frequency
+| For square PSG channels:
+|   ESF_SetFreq channel, frequency
+| For noise PSG channel:
+|   ESF_SetFreq channel, type
+|----------------------------------------------------------------------------
+| param channel ..... affected channel
+| param octave ...... octave
+| param frequency ... frequency (0 to 0x7FF for FM, 0 to 0x3FF for PSG)
+| param type ........ noise type (0x00 to 0x07)
+|****************************************************************************
+
+.macro ESF_SetFreq
+    dc.b    0x30+(\1)
+    if      (\1)<ESF_PSG1
+    dc.b    ((\2)<<3)|((\3)>>8)
+    dc.b    (\3)&0xFF
+    elseif  (\1)<ESF_PSG4
+    dc.b    (\2)&0x0F
+    dc.b    (\2)>>6
+    else
+    dc.b    (\2)
+    endc
+.endm
+
+|****************************************************************************
+| ESF_SetInstr
+| Set the instrument of a channel.
+|----------------------------------------------------------------------------
+| Format:
+|   ESF_SetInstr channel, instrument
+|----------------------------------------------------------------------------
+| param channel ...... Channel to lock
+| param instrument ... Instrument ID (0x00 to 0xFF)
+|****************************************************************************
+
+.macro ESF_SetInstr
+    dc.b    0x40+(\1)
+    dc.b    (\2)
+.endm
+
+|****************************************************************************
+| ESF_Lock
+| Lock SFX channel.
+|----------------------------------------------------------------------------
+| Format:
+|   ESF_Lock channel
+|----------------------------------------------------------------------------
+| param channel ... Channel to lock
+|****************************************************************************
+
+.macro ESF_Lock
+    dc.b    0xE0
+    dc.b    (\1)
+.endm
+
+|****************************************************************************
+| ESF_Delay
+| Stop .event.
+|----------------------------------------------------------------------------
+| Format:
+|   ESF_Delay ticks
+|----------------------------------------------------------------------------
+| param ticks ... Ticks to wait (60 = 1 second)
+|****************************************************************************
+
+.macro ESF_Delay
+    dc.b    0xFE
+    dc.b    (\1)
+.endm
+
+|****************************************************************************
+| ESF_Stop
+| Stop .event.
+|****************************************************************************
+
+.macro ESF_Stop
+    dc.b    0xFF
+.endm

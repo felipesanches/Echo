@@ -1,0 +1,58 @@
+|****************************************************************************
+| 68000 vectors
+|****************************************************************************
+
+    dc.l    0x1000000
+    dc.l    EntryPoint
+		.rept 62
+    dc.l   ErrorInt
+		.endr
+
+|****************************************************************************
+| Mega Drive header
+|****************************************************************************
+
+    .ascii    "SEGA MEGA DRIVE "
+    .ascii    "(C) SIK 2010.NOV"
+    .ascii    "ECHO TESTER PROGRAM"
+    .rept 48-19
+		dc.b    0x20
+		.endr
+    .ascii    "ECHO TESTER PROGRAM"
+    .rept 48-3
+		dc.b    0x20
+		.endr
+    .ascii    "XX XXXXXXXX-00"
+    dc.w    0x0000
+    dc.b    'J'
+    .rept 16-1
+		dc.b    0x20
+		.endr
+    dc.l    0x000000, 0x3FFFFF
+    dc.l    0xFF0000, 0xFFFFFF
+
+    .rept 12
+		dc.b    0x20
+		.endr
+
+    .rept 12
+		dc.b    0x20
+		.endr
+
+    .rept 40
+		dc.b    0x20
+		.endr
+
+    .ascii    "JUE"
+
+    .rept 13
+		dc.b    0x20
+		.endr
+
+|****************************************************************************
+| ErrorInt
+| Generic error handler routine (hangs up)
+|****************************************************************************
+
+ErrorInt:
+    bra.s   ErrorInt

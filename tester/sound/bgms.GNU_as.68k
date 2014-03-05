@@ -1,0 +1,38 @@
+|****************************************************************************
+| BGM_Test
+| Generic BGM to test .events
+|****************************************************************************
+
+BGM_Test:
+    dc.b    0xFF
+
+|****************************************************************************
+| Some conversions
+|****************************************************************************
+
+BGM_Midnas:
+    .incbin  "../data/music/midnas.esf"
+BGM_Nelpel:
+    .incbin  "../data/music/nelpel.esf"
+BGM_Megajysays:
+    .incbin  "../data/music/megajysays.esf"
+BGM_Doomsday:
+    .incbin  "../data/music/doomsday.esf"
+
+|****************************************************************************
+| Several tests used for midi2esf
+|****************************************************************************
+
+BGM_PianoTest:
+    .incbin  "../data/music/test-piano.esf"
+BGM_SquSawTest2:
+    .incbin  "../data/music/test-squsaw-2ch.esf"
+BGM_SquSawTest1:
+    .incbin  "../data/music/test-squsaw-1ch.esf"
+BGM_PSGTest:
+    .incbin  "../data/music/test-psg.esf"
+BGM_DrumTest:
+    .incbin  "../data/music/test-drums.esf"
+BGM_FluteTest:
+    .incbin  "../data/music/test-flute.esf"
+

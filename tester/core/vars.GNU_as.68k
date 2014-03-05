@@ -1,0 +1,12 @@
+|****************************************************************************
+| Where program variables are defined
+|****************************************************************************
+
+.org 0xFF0000
+
+RAM_JoyHold:         dc.b 0      | Current "held" joypad status
+RAM_JoyPress:        dc.b 0      | Current "pressed" joypad status
+RAM_LArrowAnim:      dc.w 0      | Animation for left arrow
+RAM_RArrowAnim:      dc.w 0      | Animation for right arrow
+RAM_BGAnim:          dc.w 0      | Animation for background
+RAM_CurrSong:        dc.w 0      | Selected song
